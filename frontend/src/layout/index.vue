@@ -48,7 +48,8 @@
             <el-dropdown @command="handleCommand">
               <div class="user-info">
                 <el-avatar :size="32" icon="User" />
-                <span class="username">管理员</span>
+                <span class="username">{{ currentUser ? currentUser.realName : '未登录' }}</span>
+                <el-tag size="small" type="info" effect="plain">{{ currentUser?.roleName }}</el-tag>
                 <el-icon><ArrowDown /></el-icon>
               </div>
               <template #dropdown>
@@ -84,6 +85,8 @@ const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 const isCollapse = ref(false)
+
+const currentUser = computed(() => userStore.currentUser)
 
 const menuList = computed(() => {
   const routes = router.options.routes.find(r => r.path === '/')?.children || []

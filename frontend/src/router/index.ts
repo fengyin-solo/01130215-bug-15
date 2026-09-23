@@ -52,8 +52,22 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'hse',
         name: 'HSE',
-        component: () => import('@/views/hse/index.vue'),
-        meta: { title: '安全环保', icon: 'Warning' }
+        redirect: '/hse/list',
+        meta: { title: '安全环保', icon: 'Warning' },
+        children: [
+          {
+            path: 'list',
+            name: 'HseHazard',
+            component: () => import('@/views/hse/index.vue'),
+            meta: { title: '隐患管理' }
+          },
+          {
+            path: 'records',
+            name: 'HseRecords',
+            component: () => import('@/views/hse/records/index.vue'),
+            meta: { title: '处理记录' }
+          }
+        ]
       },
       {
         path: 'report',
@@ -98,12 +112,16 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
+  // 刷新页面后从本地会话恢复当前角色，保证复查权限判断不丢失
+  userStore.restore()
   const token = userStore.token
-  
+
   if (to.path !== '/login' && !token) {
     next('/login')
   } else if (to.path === '/login' && token) {
-    next('/')
+    next('/hse/list')
+  } else if (to.path === '/hse' || to.path === '/hse/') {
+    next('/hse/list')
   } else {
     next()
   }
